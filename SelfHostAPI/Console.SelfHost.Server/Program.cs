@@ -14,7 +14,7 @@ namespace SelfHost.Server
     {
         static void Main(string[] args)
         {
-            var config = new HttpSelfHostConfiguration("http://localhost:8080");
+            var config = new HttpSelfHostConfiguration("http://localhost:5566");
 
             config.Routes.MapHttpRoute(
              name: "DefaultApi",
@@ -26,8 +26,9 @@ namespace SelfHost.Server
             using (HttpSelfHostServer server = new HttpSelfHostServer(config))
             {
                 Type valuesControllerType = typeof(APIServiceLib.TestController);
+
                 // Set our own assembly resolver where we add the assemblies we need
-                //CustomAssembliesResolver assemblyResolver = new CustomAssembliesResolver();
+                //APIAssembliesResolver assemblyResolver = new APIAssembliesResolver();
                 //config.Services.Replace(typeof(IAssembliesResolver), assemblyResolver);
 
                 server.OpenAsync().Wait();                
@@ -37,18 +38,14 @@ namespace SelfHost.Server
         }
     }
 
-    public class CustomAssembliesResolver : DefaultAssembliesResolver
+    public class APIAssembliesResolver : DefaultAssembliesResolver
     {
         public override ICollection<Assembly> GetAssemblies()
         {
             ICollection<Assembly> baseAssemblies = base.GetAssemblies();
-
             List<Assembly> assemblies = new List<Assembly>(baseAssemblies);
-
-            var controllersAssembly = Assembly.LoadFrom(@"C:\libs\controllers\ControllersLibrary.dll");
-
+            var controllersAssembly = Assembly.LoadFrom(@"C:\somePath\controllerlib.dll");
             baseAssemblies.Add(controllersAssembly);
-
             return assemblies;
         }
     }
